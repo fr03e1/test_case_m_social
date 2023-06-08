@@ -25,14 +25,14 @@ class MovieService
         return $this->movie::paginate($limit ?? 10, ['*'],'page',$page ?? 1);
     }
 
-    public function addToFavorite(int $userId, Movie $movie)
+    public function addToFavorite(int $userId, Movie $movie): array
     {
-        $movie->users()->sync([$userId]);
+        return $movie->users()->sync([$userId]);
     }
 
-    public function deleteFromFavorite(int $userId, Movie $movie)
+    public function deleteFromFavorite(int $userId, Movie $movie): array
     {
-        $movie->users()->detach($userId);
+       return $movie->users()->detach($userId);
     }
 
     public function notInFavoriteSql(int $userId): Collection

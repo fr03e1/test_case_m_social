@@ -46,7 +46,11 @@ class MovieController extends Controller
             return new JsonResponse('Not Authorized',401);
         }
 
-        $this->movieService->addToFavorite((int) $userId, $movie);
+        $result = $this->movieService->addToFavorite((int) $userId, $movie);
+
+        if(!$result) {
+            return new JsonResponse('Something went wrong',500);
+        }
 
         return new JsonResponse('Movie was successfully added to favorite',201);
     }
@@ -60,7 +64,11 @@ class MovieController extends Controller
             return new JsonResponse('Not Authorized',401);
         }
 
-        $this->movieService->deleteFromFavorite((int) $userId,  $movie);
+        $result = $this->movieService->deleteFromFavorite((int) $userId,  $movie);
+
+        if(!$result) {
+            return new JsonResponse('Something went wrong',500);
+        }
 
         return new JsonResponse('Movie was successfully deleted from favorite');
     }

@@ -6,6 +6,7 @@ namespace App\Http\Services;
 
 use App\Models\Movie;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class MovieService
@@ -34,7 +35,7 @@ class MovieService
         $movie->users()->detach($userId);
     }
 
-    public function notInFavoriteSql(int $userId)
+    public function notInFavoriteSql(int $userId): Collection
     {
 
         $movies = $this->movie::with('users')
@@ -46,7 +47,7 @@ class MovieService
         return $movies;
     }
 
-    public function notInFavoriteMemory(int $userId)
+    public function notInFavoriteMemory(int $userId): Collection
     {
         $movies = $this->movie::all();
         $user = $this->user::find($userId);

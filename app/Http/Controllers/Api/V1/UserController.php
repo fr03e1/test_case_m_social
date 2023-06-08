@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\User\UserRequest;
+use App\Http\Requests\Api\V1\User\UserUpdateRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +33,7 @@ class UserController extends Controller
         return new JsonResponse(UserResource::make($user));
     }
 
-    public function update(UserRequest $request): JsonResponse
+    public function update(UserUpdateRequest $request): JsonResponse
     {
         $data = $request->validated();
         $userid = $request->header('User_id');

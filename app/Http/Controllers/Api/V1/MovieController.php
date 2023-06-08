@@ -62,7 +62,7 @@ class MovieController extends Controller
 
         $this->movieService->deleteFromFavorite((int) $userId,  $movie);
 
-        return new JsonResponse('Movie was successfully deleted from favorite',200);
+        return new JsonResponse('Movie was successfully deleted from favorite');
     }
 
     public function getMoviesNotInFavorite(Request $request): JsonResponse

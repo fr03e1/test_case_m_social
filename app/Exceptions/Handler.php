@@ -3,8 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -24,9 +25,8 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-
-        $this->reportable(function (NotFoundHttpException $e) {
-            return 'hello';
+        $this->renderable(function (\Exception $e, $request) {
+            return new JsonResponse(['error'=>'INTERNAL_ERROR'],500);
         });
     }
 }

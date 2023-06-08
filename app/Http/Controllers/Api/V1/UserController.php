@@ -21,17 +21,27 @@ class UserController extends Controller
         $this->middleware('customAuth');
     }
 
-    public function show(Request $request): UserResource
+    public function show(Request $request): JsonResponse
     {
         $userid = $request->header('User_id');
+
+        if(!$userid) {
+            return new JsonResponse('Not Authorized',401);
+        }
+
         $user = $this->user->find($userid);
-        return UserResource::make($user);
+        return new JsonResponse(UserResource::make($user));
     }
 
     public function update(UserRequest $request): JsonResponse
     {
         $data = $request->validated();
         $userid = $request->header('User_id');
+
+        if(!$userid) {
+            return new JsonResponse('Not Authorized',401);
+        }
+
         $this->user->where('id',$userid)->update($data);
         return new JsonResponse('User was successfully updated',201);
     }
@@ -39,6 +49,11 @@ class UserController extends Controller
     public function delete(Request $request): JsonResponse
     {
         $userid = $request->header('User_id');
+
+        if(!$userid) {
+            return new JsonResponse('Not Authorized',401);
+        }
+
         $this->user->where('id',$userid)->delete();
         return new JsonResponse('User was successfully deleted',201);
     }

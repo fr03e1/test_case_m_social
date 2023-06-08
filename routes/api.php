@@ -20,5 +20,8 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::controller(MovieController::class)->group(function ()  {
         Route::get('movies', 'index');
+        Route::post('movies/{movie}', 'addToFavorite');
+        Route::delete('movies/{movie}', 'deleteFromFavorite');
+        Route::get('movies/new_for_you', 'getMoviesNotInFavorite');
     });
 });

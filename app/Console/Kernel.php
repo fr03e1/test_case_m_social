@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-         $schedule->command('movie:cron')->everyThreeHours();
+         $schedule->command('movie:cron')->everyMinute();
     }
 
     /**

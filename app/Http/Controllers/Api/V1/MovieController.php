@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\MovieResource;
 use App\Http\Services\MovieService;
 use App\Models\Movie;
-use http\Env\Response;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class MovieController extends Controller
 {
@@ -16,32 +21,68 @@ class MovieController extends Controller
         private MovieService $movieService,
     )
     {
-        $this->middleware('customAuth')->except('index');
+        $this->middleware('customAuth')->except(['index']);
     }
 
-    public function index()
+    public function index(Request $request): JsonResponse
     {
+        $movies = $this->movieService->getAllMovies(
+            (int) $request->limit,(int) $request->page
+        );
 
-        $responses = Http::pool(fn(Pool $pool) => [
-            $pool->withToken('cyTrsonKnUSSReE8jR1m')
-                ->get('https://the-one-api.dev/v2/movie?page=1&limit=3'),
-            $pool->withToken('cyTrsonKnUSSReE8jR1m')
-                ->get('https://the-one-api.dev/v2/movie?page=2&limit=3'),
-            $pool->withToken('cyTrsonKnUSSReE8jR1m')
-                ->get('https://the-one-api.dev/v2/movie?page=3&limit=3'),
-        ]);
+        return new JsonResponse(
+            MovieResource::collection($movies)
+                ->response()
+                ->getData(true)
+        );
+    }
 
-        foreach ($responses as $eachResponse) {
-            $data = $eachResponse['docs'];
 
-            foreach ($data as $movie) {
-                Movie::firstOrCreate([
-                    'name' => $movie['name'],
-                    'budgetInMillions' => $movie['budgetInMillions']
-                ]);
-            }
+    public function addToFavorite(Request $request, Movie $movie): JsonResponse
+    {
+        $userId = $request->header('User_id');
+
+        if(!$userId) {
+            return new JsonResponse('Not Authorized',401);
         }
 
-        return $data;
+        $this->movieService->addToFavorite((int) $userId, $movie);
+
+        return new JsonResponse('Movie was successfully added to favorite',201);
+    }
+
+    public function deleteFromFavorite(Request $request, Movie $movie): JsonResponse
+    {
+
+        $userId = $request->header('User_id');
+
+        if(!$userId) {
+            return new JsonResponse('Not Authorized',401);
+        }
+
+        $this->movieService->deleteFromFavorite((int) $userId,  $movie);
+
+        return new JsonResponse('Movie was successfully deleted from favorite',200);
+    }
+
+    public function getMoviesNotInFavorite(Request $request): JsonResponse
+    {
+        $userId = $request->header('User_id');
+
+        if(!$userId) {
+            return new JsonResponse('Not Authorized',401);
+        }
+
+        $loaderType = $request->loaderType ?? 'sql';
+
+        if($loaderType==='sql') {
+           $movies = $this->movieService->notInFavoriteSql((int) $userId);
+        }
+
+        if($loaderType==='inMemory') {
+            $movies = $this->movieService->notInFavoriteMemory((int) $userId);
+        }
+
+        return new JsonResponse(MovieResource::collection($movies));
     }
 }

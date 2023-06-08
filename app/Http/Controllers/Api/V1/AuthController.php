@@ -25,5 +25,4 @@ class AuthController extends Controller
         $user = $this->authService->register($data);
         return UserResource::make($user);
     }
-
 }

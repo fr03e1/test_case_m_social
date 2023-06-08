@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\User\UserRequest;
-use App\Http\Resources\v1\UserResource;
-use App\Http\Services\AuthService;
+use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,6 +40,6 @@ class UserController extends Controller
     {
         $userid = $request->header('User_id');
         $this->user->where('id',$userid)->delete();
-        return new JsonResponse('User was successfully delete',201);
+        return new JsonResponse('User was successfully deleted',201);
     }
 }

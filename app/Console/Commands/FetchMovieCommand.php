@@ -1,25 +1,33 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Console\Commands;
 
-use App\Http\Controllers\Controller;
-use App\Http\Services\MovieService;
 use App\Models\Movie;
-use http\Env\Response;
+use Illuminate\Console\Command;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class MovieController extends Controller
+class FetchMovieCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'movie:cron';
 
-    public function __construct(
-        private MovieService $movieService,
-    )
-    {
-        $this->middleware('customAuth')->except('index');
-    }
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Fetching movies from api';
 
-    public function index()
+    /**
+     * Execute the console command.
+     */
+    public function handle()
     {
 
         $responses = Http::pool(fn(Pool $pool) => [
@@ -30,6 +38,8 @@ class MovieController extends Controller
             $pool->withToken('cyTrsonKnUSSReE8jR1m')
                 ->get('https://the-one-api.dev/v2/movie?page=3&limit=3'),
         ]);
+
+
 
         foreach ($responses as $eachResponse) {
             $data = $eachResponse['docs'];
@@ -42,6 +52,5 @@ class MovieController extends Controller
             }
         }
 
-        return $data;
     }
 }

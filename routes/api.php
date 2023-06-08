@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\MovieController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,5 +18,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::delete('users/profile', 'delete');
     });
 
-
+    Route::controller(MovieController::class)->group(function ()  {
+        Route::get('movies', 'index');
+    });
 });
